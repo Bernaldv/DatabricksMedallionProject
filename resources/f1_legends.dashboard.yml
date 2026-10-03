@@ -1,0 +1,16 @@
+resources:
+  dashboards:
+    f1_legends:
+      display_name: "F1 Legends — Historia y Estadísticas"
+      file_path: ../dashboard/f1_legends.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+
+      # Catálogo por defecto para todas las consultas del dashboard.
+      # Las consultas usan "gold.<tabla>" sin catálogo, así que en dev leen
+      # catalog_pr_db_dev.gold y en prod catalog_pr_db_prod.gold.
+      dataset_catalog: catalog_pr_db_${bundle.target}
+      dataset_schema: gold
+
+      permissions:
+        - group_name: dbrs_visualization_${bundle.target}
+          level: CAN_READ

@@ -1,0 +1,1281 @@
+{
+  "datasets": [
+    {
+      "name": "year_options",
+      "displayName": "Opciones de Año",
+      "queryLines": [
+        "SELECT DISTINCT\n",
+        "  race_year\n",
+        "FROM\n",
+        "  gold.season_champions\n",
+        "ORDER BY\n",
+        "  race_year"
+      ]
+    },
+    {
+      "name": "constructor_career",
+      "displayName": "Top 10 Constructores — Carrera",
+      "config": {
+        "version": "1.1",
+        "source": "SELECT constructor_id, constructor_name, nationality, total_points, total_wins,\n       total_podiums, first_season, last_season\nFROM gold.constructor_career ORDER BY total_wins DESC LIMIT 10\n",
+        "dimensions": [
+          {
+            "name": "constructor_name",
+            "expr": "constructor_name",
+            "displayName": "Escudería"
+          },
+          {
+            "name": "nationality",
+            "expr": "nationality",
+            "displayName": "Nacionalidad"
+          },
+          {
+            "name": "first_season",
+            "expr": "first_season",
+            "displayName": "Primera Temporada"
+          },
+          {
+            "name": "last_season",
+            "expr": "last_season",
+            "displayName": "Última Temporada"
+          }
+        ],
+        "measures": [
+          {
+            "name": "total_wins",
+            "expr": "SUM(total_wins)",
+            "displayName": "Victorias",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "total_points",
+            "expr": "SUM(total_points)",
+            "displayName": "Puntos Totales",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "total_podiums",
+            "expr": "SUM(total_podiums)",
+            "displayName": "Podios",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "drivers_no_title",
+      "displayName": "Grandes Sin Corona",
+      "config": {
+        "version": "1.1",
+        "source": "SELECT driver_id, full_name, total_wins, total_points, rank_by_wins FROM gold.drivers_without_title ORDER BY rank_by_wins ASC LIMIT 10\n",
+        "dimensions": [
+          {
+            "name": "full_name",
+            "expr": "full_name",
+            "displayName": "Piloto"
+          },
+          {
+            "name": "rank_by_wins",
+            "expr": "rank_by_wins",
+            "displayName": "Ranking"
+          }
+        ],
+        "measures": [
+          {
+            "name": "total_wins",
+            "expr": "SUM(total_wins)",
+            "displayName": "Victorias",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "total_points",
+            "expr": "SUM(total_points)",
+            "displayName": "Puntos Totales",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "driver_career",
+      "displayName": "Top 10 Pilotos — Carrera",
+      "config": {
+        "version": "1.1",
+        "source": "SELECT driver_id, full_name, nationality, total_points, total_wins, total_podiums,\n       races_disputed, first_season, last_season\nFROM gold.driver_career ORDER BY total_wins DESC LIMIT 10\n",
+        "dimensions": [
+          {
+            "name": "full_name",
+            "expr": "full_name",
+            "displayName": "Piloto"
+          },
+          {
+            "name": "nationality",
+            "expr": "nationality",
+            "displayName": "Nacionalidad"
+          },
+          {
+            "name": "first_season",
+            "expr": "first_season",
+            "displayName": "Primera Temporada"
+          },
+          {
+            "name": "last_season",
+            "expr": "last_season",
+            "displayName": "Última Temporada"
+          },
+          {
+            "name": "races_disputed",
+            "expr": "races_disputed",
+            "displayName": "Carreras"
+          }
+        ],
+        "measures": [
+          {
+            "name": "total_wins",
+            "expr": "SUM(total_wins)",
+            "displayName": "Victorias",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "total_points",
+            "expr": "SUM(total_points)",
+            "displayName": "Puntos Totales",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          },
+          {
+            "name": "total_podiums",
+            "expr": "SUM(total_podiums)",
+            "displayName": "Podios",
+            "format": {
+              "type": "number",
+              "decimalPlaces": {
+                "type": "exact",
+                "places": 0.0
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "constructor_standings",
+      "displayName": "Clasificación por Temporada",
+      "queryLines": [
+        "SELECT\n",
+        "  race_year,\n",
+        "  constructor_id,\n",
+        "  constructor_name,\n",
+        "  total_points,\n",
+        "  wins,\n",
+        "  podiums,\n",
+        "  season_rank\n",
+        "FROM\n",
+        "  gold.constructor_standings\n",
+        "WHERE\n",
+        "  season_rank <= 5\n",
+        "  AND (\n",
+        "    :year_from IS NULL\n",
+        "    OR race_year >= :year_from\n",
+        "  )\n",
+        "  AND (\n",
+        "    :year_to IS NULL\n",
+        "    OR race_year <= :year_to\n",
+        "  )\n",
+        "  AND (\n",
+        "    :selected_year IS NULL\n",
+        "    OR race_year = :selected_year\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  total_points DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Desde el Año",
+          "keyword": "year_from",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "1950"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "Hasta el Año",
+          "keyword": "year_to",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "2030"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "Temporada",
+          "keyword": "selected_year",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "2024"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "season_champions",
+      "displayName": "Campeones por Temporada",
+      "queryLines": [
+        "SELECT\n",
+        "  race_year,\n",
+        "  full_name,\n",
+        "  champion_points\n",
+        "FROM\n",
+        "  gold.season_champions\n",
+        "WHERE\n",
+        "  (\n",
+        "    :year_from IS NULL\n",
+        "    OR race_year >= :year_from\n",
+        "  )\n",
+        "  AND (\n",
+        "    :year_to IS NULL\n",
+        "    OR race_year <= :year_to\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  race_year ASC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Desde el Año",
+          "keyword": "year_from",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "1950"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "Hasta el Año",
+          "keyword": "year_to",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "2030"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "constructor_dominance",
+      "displayName": "Dinastías del Paddock",
+      "queryLines": [
+        "SELECT\n",
+        "  constructor_id,\n",
+        "  constructor_name,\n",
+        "  streak_start_year,\n",
+        "  streak_end_year,\n",
+        "  streak_length,\n",
+        "  CONCAT(\n",
+        "    constructor_name,\n",
+        "    ' (',\n",
+        "    CAST(streak_start_year AS STRING),\n",
+        "    '-',\n",
+        "    CAST(streak_end_year AS STRING),\n",
+        "    ')'\n",
+        "  ) AS dynasty_label\n",
+        "FROM\n",
+        "  gold.constructor_dominance\n",
+        "WHERE\n",
+        "  (\n",
+        "    :year_from IS NULL\n",
+        "    OR streak_end_year >= :year_from\n",
+        "  )\n",
+        "  AND (\n",
+        "    :year_to IS NULL\n",
+        "    OR streak_start_year <= :year_to\n",
+        "  )\n",
+        "ORDER BY\n",
+        "  streak_length DESC"
+      ],
+      "parameters": [
+        {
+          "displayName": "Desde el Año",
+          "keyword": "year_from",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "1950"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "displayName": "Hasta el Año",
+          "keyword": "year_to",
+          "dataType": "INTEGER",
+          "defaultSelection": {
+            "values": {
+              "dataType": "INTEGER",
+              "values": [
+                {
+                  "value": "2030"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "ce0c75ac",
+      "displayName": "F1 Leyendas",
+      "layout": [
+        {
+          "widget": {
+            "name": "title_banner",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# 🏎 <span style=\"font-size: 18px;\">F1 LEGENDS — HISTORIA Y ESTADÍSTICAS</span>\n",
+                "\n",
+                "**El centro de mando de la Fórmula 1.** Quién dominó, quién mereció más de lo que ganó, y qué equipos marcaron época desde 1950 hasta hoy."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "sec1_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 🏆 <span style=\"font-size: 12px;\">LEYENDAS AL VOLANTE</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "sec2_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 🔧<span style=\"font-size: 12px;\"> LOS MEJORES EQUIPOS DE LA HISTORIA</span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "sec1_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "driver_career",
+                  "fields": [
+                    {
+                      "name": "measure(total_wins)",
+                      "expression": "MEASURE(`total_wins`)"
+                    },
+                    {
+                      "name": "full_name",
+                      "expression": "`full_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": "Top 10 Pilotos por Victorias",
+                "description": "Los pilotos con más victorias en la historia de la Fórmula 1"
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#E10600"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(total_wins)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "full_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "sec2_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "constructor_career",
+                  "fields": [
+                    {
+                      "name": "nationality",
+                      "expression": "`nationality`"
+                    },
+                    {
+                      "name": "measure(total_wins)",
+                      "expression": "MEASURE(`total_wins`)"
+                    },
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": "Top 10 Constructores por Victorias",
+                "description": "Las escuderías más ganadoras de la historia, clasificadas por nacionalidad"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(total_wins)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "constructor_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "nationality",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 3,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "sec3_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## ⏱ CAMPEONES A TRAVÉS DEL TIEMPO"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "sec4_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## ❌ <span style=\"font-size:12px\">GRANDES SIN CORONA </span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 21,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "sec5_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## <span style=\"font-size: 12px;\">👑 DINASTÍAS DEL PADDOCK </span>"
+              ]
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 21,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "sec4_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "drivers_no_title",
+                  "fields": [
+                    {
+                      "name": "measure(total_wins)",
+                      "expression": "MEASURE(`total_wins`)"
+                    },
+                    {
+                      "name": "full_name",
+                      "expression": "`full_name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": "Pilotos Sin Título — Victorias",
+                "description": "Pilotos con más victorias que NUNCA conquistaron el campeonato mundial. El talento que el destino le negó."
+              },
+              "version": 3,
+              "mark": {
+                "colors": [
+                  "#FF8700"
+                ]
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(total_wins)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "full_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "sec6_header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 📊 CLASIFICACIÓN POR TEMPORADA — Top 5 escuderías de cada año"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 31,
+            "width": 12,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "sec3_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "season_champions",
+                  "fields": [
+                    {
+                      "name": "full_name",
+                      "expression": "`full_name`"
+                    },
+                    {
+                      "name": "race_year",
+                      "expression": "`race_year`"
+                    },
+                    {
+                      "name": "sum(champion_points)",
+                      "expression": "SUM(`champion_points`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": {
+                  "value": "Campeones del Mundo por Temporada",
+                  "fields": []
+                },
+                "description": {
+                  "value": "Puntos del campeón por temporada desde los inicios de la F1. Cada punto = un campeón del mundo. Filtrable con el rango de años global.",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "mark": {
+                "shape": "circle",
+                "size": 1
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "race_year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(champion_points)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "full_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 13,
+            "width": 12,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "sec5_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "constructor_dominance",
+                  "fields": [
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    },
+                    {
+                      "name": "max(streak_length)",
+                      "expression": "MAX(`streak_length`)"
+                    },
+                    {
+                      "name": "dynasty_label",
+                      "expression": "`dynasty_label`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": {
+                  "value": "Racha de Dominio por Escudería",
+                  "fields": []
+                },
+                "description": {
+                  "value": "Rachas de dominancia de cada escudería. Cada barra = una era de dominio. Filtrable con el rango de años global.",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "max(streak_length)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "dynasty_label",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "constructor_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 22,
+            "width": 6,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "sec6_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef8e45f1792a104f0b5b78a0f8a_race_year",
+                "query": {
+                  "datasetName": "year_options",
+                  "fields": [
+                    {
+                      "name": "race_year",
+                      "expression": "`race_year`"
+                    },
+                    {
+                      "name": "race_year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9dd56143fa0d5a26a7824017f_selected_year",
+                "query": {
+                  "datasetName": "constructor_standings",
+                  "parameters": [
+                    {
+                      "name": "selected_year",
+                      "keyword": "selected_year"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Seleccionar Temporada"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "race_year",
+                    "queryName": "dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef8e45f1792a104f0b5b78a0f8a_race_year"
+                  },
+                  {
+                    "parameterName": "selected_year",
+                    "queryName": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9dd56143fa0d5a26a7824017f_selected_year"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 32,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "sec6_chart",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "constructor_standings",
+                  "fields": [
+                    {
+                      "name": "constructor_name",
+                      "expression": "`constructor_name`"
+                    },
+                    {
+                      "name": "sum(total_points)",
+                      "expression": "SUM(`total_points`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": {
+                  "value": "Clasificación Constructores — Temporada",
+                  "fields": []
+                },
+                "description": {
+                  "value": "Selecciona el año con el filtro de arriba para ver el ranking de esa temporada. Default: 2024.",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(total_points)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "constructor_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "constructor_name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 34,
+            "width": 12,
+            "height": 8
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "global_filters",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "global_year_from",
+            "queries": [
+              {
+                "name": "dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef8e45f1792a104f0b5b78a0f8a_race_year",
+                "query": {
+                  "datasetName": "year_options",
+                  "fields": [
+                    {
+                      "name": "race_year",
+                      "expression": "`race_year`"
+                    },
+                    {
+                      "name": "race_year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9ddae1201bca7fca92b79fbb6_year_from",
+                "query": {
+                  "datasetName": "season_champions",
+                  "parameters": [
+                    {
+                      "name": "year_from",
+                      "keyword": "year_from"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9de3b142f8c93a6344be1785e_year_from",
+                "query": {
+                  "datasetName": "constructor_dominance",
+                  "parameters": [
+                    {
+                      "name": "year_from",
+                      "keyword": "year_from"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9dd56143fa0d5a26a7824017f_year_from",
+                "query": {
+                  "datasetName": "constructor_standings",
+                  "parameters": [
+                    {
+                      "name": "year_from",
+                      "keyword": "year_from"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Desde el Año"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "race_year",
+                    "queryName": "dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef8e45f1792a104f0b5b78a0f8a_race_year"
+                  },
+                  {
+                    "parameterName": "year_from",
+                    "queryName": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9ddae1201bca7fca92b79fbb6_year_from"
+                  },
+                  {
+                    "parameterName": "year_from",
+                    "queryName": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9de3b142f8c93a6344be1785e_year_from"
+                  },
+                  {
+                    "parameterName": "year_from",
+                    "queryName": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9dd56143fa0d5a26a7824017f_year_from"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "global_year_to",
+            "queries": [
+              {
+                "name": "dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef8e45f1792a104f0b5b78a0f8a_race_year",
+                "query": {
+                  "datasetName": "year_options",
+                  "fields": [
+                    {
+                      "name": "race_year",
+                      "expression": "`race_year`"
+                    },
+                    {
+                      "name": "race_year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9ddae1201bca7fca92b79fbb6_year_to",
+                "query": {
+                  "datasetName": "season_champions",
+                  "parameters": [
+                    {
+                      "name": "year_to",
+                      "keyword": "year_to"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9de3b142f8c93a6344be1785e_year_to",
+                "query": {
+                  "datasetName": "constructor_dominance",
+                  "parameters": [
+                    {
+                      "name": "year_to",
+                      "keyword": "year_to"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9dd56143fa0d5a26a7824017f_year_to",
+                "query": {
+                  "datasetName": "constructor_standings",
+                  "parameters": [
+                    {
+                      "name": "year_to",
+                      "keyword": "year_to"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Hasta el Año"
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "race_year",
+                    "queryName": "dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef8e45f1792a104f0b5b78a0f8a_race_year"
+                  },
+                  {
+                    "parameterName": "year_to",
+                    "queryName": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9ddae1201bca7fca92b79fbb6_year_to"
+                  },
+                  {
+                    "parameterName": "year_to",
+                    "queryName": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9de3b142f8c93a6344be1785e_year_to"
+                  },
+                  {
+                    "parameterName": "year_to",
+                    "queryName": "parameter_dashboards/01f1bef7413a1419adf387acaffa2e96/datasets/01f1bef9dd56143fa0d5a26a7824017f_year_to"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#0D0D0D",
+        "dark": "#0D0D0D"
+      },
+      "widgetBackgroundColor": {
+        "light": "#1A1A1A",
+        "dark": "#1A1A1A"
+      },
+      "widgetBorderColor": {
+        "light": "#2D2D2D",
+        "dark": "#2D2D2D"
+      },
+      "selectionColor": {
+        "light": "#E10600",
+        "dark": "#E10600"
+      },
+      "visualizationColors": [
+        "#E10600",
+        "#FFFFFF",
+        "#FFD700",
+        "#00D2BE",
+        "#FF8700",
+        "#005AFF",
+        "#B6BABD",
+        "#9B0000",
+        "#39B54A",
+        "#C600E1"
+      ],
+      "widgetHeaderAlignment": "LEFT",
+      "widgetPadding": 12,
+      "widgetMargin": 4,
+      "widgetCornerRadius": 4,
+      "widgetShadow": 15,
+      "fontSettings": {
+        "base": {
+          "fontFamily": "Orbitron",
+          "fontColor": {
+            "light": "#FFFFFF",
+            "dark": "#FFFFFF"
+          },
+          "fontWeight": 600
+        },
+        "widgetTitle": {
+          "fontFamily": "Orbitron",
+          "textCase": "TEXT_CASE_UPPERCASE",
+          "fontColor": {
+            "light": "#E10600",
+            "dark": "#E10600"
+          },
+          "fontWeight": 700
+        },
+        "fieldTitle": {
+          "fontFamily": "Orbitron",
+          "fontColor": {
+            "light": "#B0B0B0",
+            "dark": "#B0B0B0"
+          },
+          "fontWeight": 600
+        },
+        "fieldValue": {
+          "fontFamily": "Orbitron",
+          "fontColor": {
+            "light": "#FFFFFF",
+            "dark": "#FFFFFF"
+          }
+        }
+      },
+      "gridLineColor": {
+        "light": "#2A2A2A",
+        "dark": "#2A2A2A"
+      },
+      "axisLineColor": {
+        "light": "#E10600",
+        "dark": "#E10600"
+      }
+    },
+    "applyModeEnabled": false
+  }
+}

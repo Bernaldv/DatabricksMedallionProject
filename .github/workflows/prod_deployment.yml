@@ -55,3 +55,5 @@ jobs:
       - name: Ejecutar el Job del ETL y esperar a que termine
         # Debe coincidir con la clave del job en resources/etl_project_refresh.job.yml
         run: databricks bundle run etl_project_refresh --target prod
+
+
