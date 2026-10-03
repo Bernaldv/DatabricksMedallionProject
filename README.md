@@ -1,7 +1,7 @@
 # 🏎️ F1 Legends
 #       ETL Medallion con Azure Databricks
 
-Proyecto final del curso **Ingeniería de Datos con Databricks**. Implementa un pipeline ETL completo sobre datos históricos de la Fórmula 1 (1950 – presente) usando la **arquitectura Medallion** (Bronze → Silver → Gold) en **Azure Databricks**, gobernado con **Unity Catalog**, desplegado con **Databricks Asset Bundles** y automatizado de desarrollo a producción con **GitHub Actions (CI/CD)**.
+Proyecto final del curso **Ingeniería de Datos con Databricks-Smart Data**. Implementación de un pipeline ETL completo sobre datos históricos de la Fórmula 1 (1950 – presente) usando la **arquitectura Medallion** (Bronze → Silver → Gold) en **Azure Databricks**, gobernado con **Unity Catalog**, desplegado con **Databricks Asset Bundles** y automatizado de desarrollo a producción con **GitHub Actions (CI/CD)**.
 
 El resultado final es el dashboard **"F1 Legends — Historia y Estadísticas"**, que responde preguntas como: ¿quiénes son los pilotos y escuderías más ganadores?, ¿qué pilotos ganaron mucho pero nunca fueron campeones?, y ¿qué equipos dominaron cada época?
 
@@ -392,8 +392,7 @@ Las capturas están en [`evidencias/`](./evidencias).
 |---|---|
 | GitHub Actions — deploy a PROD | ![](./evidencias/12.EjecucionGitHubActionsProd.png) |
 | Workflow ejecutado correctamente en PROD | ![](./evidencias/13.Ejecucion_workflow_prod.png) |
-| Visualización | ![](./evidencias/actions_dev_ok.png) |
-
+| Visualización PROD | <img src="./evidencias/16.VisualizacionReporte_parte1_prod.png" width="500"><br><img src="./evidencias/16.VisualizacionReporte_parte2_prod.png" width="500"><br><img src="./evidencias/16.VisualizacionReporte_parte3_prod.png" width="500"><br><img src="./evidencias/16.VisualizacionReporte_parte4_prod.png" width="500"> |
 ---
 
 
