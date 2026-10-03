@@ -1,0 +1,33 @@
+name: Deploy to PROD dtbrsdvbtprod01
+ 
+# Se dispara solo cuando se hace merge/push a main (producción)
+on:
+  push:
+    branches:
+      - main
+ 
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: prod   # opcional: si configuraste un GitHub Environment "prod" con protección/aprobación manual
+ 
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_DEST_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_DEST_TOKEN }}
+ 
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+ 
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+ 
+      - name: Validar el bundle (target prod)
+        run: databricks bundle validate --target prod
+ 
+      - name: Desplegar el bundle (crea/actualiza el Job en Databricks)
+        run: databricks bundle deploy --target prod
+ 
+      - name: Ejecutar el Job del ETL y esperar a que termine
+        run: databricks bundle run etl_medallion --target prod
+ 

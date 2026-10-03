@@ -1,0 +1,47 @@
+# This is a Declarative Automation Bundle definition for bund_project_medallion_databricks.
+# See https://docs.databricks.com/dev-tools/bundles/index.html for documentation.
+bundle:
+  name: bund_project_medallion_databricks
+  uuid: c9f74697-e2c4-4ad3-8b5c-dafbf71a09be
+
+include:
+  - resources/*.yml
+
+# Variable declarations. These variables are assigned in the dev/prod targets below.
+# Solo "catalog" varía por ambiente. Los schemas (bronze/silver/gold) son fijos:
+# no cambian entre dev y prod, así que se definen directo en cada task del job,
+
+variables:
+  storage_name:
+    description: "Storage account (ADLS Gen2) del ambiente"
+  credential_name:
+    description: "Storage Credential de Unity Catalog del ambiente"
+
+
+targets:
+  dev:
+    # The default target uses 'mode: development' to create a development copy.
+    # - Deployed resources get prefixed with '[dev my_user_name]'
+    # - Any job schedules and triggers are paused by default.
+    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    mode: development
+    default: true
+    workspace:
+      host: https://adb-7405612293435633.13.azuredatabricks.net
+    variables:
+      storage_name: "adlsdvbtdev01"
+      credential_name: credential_dev
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-7405606644802966.6.azuredatabricks.net
+      # We explicitly deploy to /Workspace/Users/diana.bernalt@outlook.com to make sure we only have a single copy.
+      root_path: /Workspace/Users/diana.bernalt@outlook.com/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      storage_name: "adlsdvbtprod01"
+      credential_name: credential_prod
+
+    permissions:
+      - user_name: diana.bernalt@outlook.com
+        level: CAN_MANAGE
