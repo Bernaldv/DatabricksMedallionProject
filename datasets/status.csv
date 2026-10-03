@@ -1,0 +1,142 @@
+statusId,status,source
+1,Finished,historical
+2,Disqualified,historical
+3,Accident,historical
+4,Collision,historical
+5,Engine,historical
+6,Gearbox,historical
+7,Transmission,historical
+8,Clutch,historical
+9,Hydraulics,historical
+10,Electrical,historical
+11,+1 Lap,historical
+12,+2 Laps,historical
+13,+3 Laps,historical
+14,+4 Laps,historical
+15,+5 Laps,historical
+16,+6 Laps,historical
+17,+7 Laps,historical
+18,+8 Laps,historical
+19,+9 Laps,historical
+20,Spun off,historical
+21,Radiator,historical
+22,Suspension,historical
+23,Brakes,historical
+24,Differential,historical
+25,Overheating,historical
+26,Mechanical,historical
+27,Tyre,historical
+28,Driver Seat,historical
+29,Puncture,historical
+30,Driveshaft,historical
+31,Retired,historical
+32,Fuel pressure,historical
+33,Front wing,historical
+34,Water pressure,historical
+35,Refuelling,historical
+36,Wheel,historical
+37,Throttle,historical
+38,Steering,historical
+39,Technical,historical
+40,Electronics,historical
+41,Broken wing,historical
+42,Heat shield fire,historical
+43,Exhaust,historical
+44,Oil leak,historical
+45,+11 Laps,historical
+46,Wheel rim,historical
+47,Water leak,historical
+48,Fuel pump,historical
+49,Track rod,historical
+50,+17 Laps,historical
+51,Oil pressure,historical
+53,+13 Laps,historical
+54,Withdrew,historical
+55,+12 Laps,historical
+56,Engine fire,historical
+58,+26 Laps,historical
+59,Tyre puncture,historical
+60,Out of fuel,historical
+61,Wheel nut,historical
+62,Not classified,historical
+63,Pneumatics,historical
+64,Handling,historical
+65,Rear wing,historical
+66,Fire,historical
+67,Wheel bearing,historical
+68,Physical,historical
+69,Fuel system,historical
+70,Oil line,historical
+71,Fuel rig,historical
+72,Launch control,historical
+73,Injured,historical
+74,Fuel,historical
+75,Power loss,historical
+76,Vibrations,historical
+77,107% Rule,historical
+78,Safety,historical
+79,Drivetrain,historical
+80,Ignition,historical
+81,Did not qualify,historical
+82,Injury,historical
+83,Chassis,historical
+84,Battery,historical
+85,Stalled,historical
+86,Halfshaft,historical
+87,Crankshaft,historical
+88,+10 Laps,historical
+89,Safety concerns,historical
+90,Not restarted,historical
+91,Alternator,historical
+92,Underweight,historical
+93,Safety belt,historical
+94,Oil pump,historical
+95,Fuel leak,historical
+96,Excluded,historical
+97,Did not prequalify,historical
+98,Injection,historical
+99,Distributor,historical
+100,Driver unwell,historical
+101,Turbo,historical
+102,CV joint,historical
+103,Water pump,historical
+104,Fatal accident,historical
+105,Spark plugs,historical
+106,Fuel pipe,historical
+107,Eye injury,historical
+108,Oil pipe,historical
+109,Axle,historical
+110,Water pipe,historical
+111,+14 Laps,historical
+112,+15 Laps,historical
+113,+25 Laps,historical
+114,+18 Laps,historical
+115,+22 Laps,historical
+116,+16 Laps,historical
+117,+24 Laps,historical
+118,+29 Laps,historical
+119,+23 Laps,historical
+120,+21 Laps,historical
+121,Magneto,historical
+122,+44 Laps,historical
+123,+30 Laps,historical
+124,+19 Laps,historical
+125,+46 Laps,historical
+126,Supercharger,historical
+127,+20 Laps,historical
+128,+42 Laps,historical
+129,Engine misfire,historical
+130,Collision damage,historical
+131,Power Unit,historical
+132,ERS,historical
+133,+49 Laps,historical
+134,+38 Laps,historical
+135,Brake duct,historical
+136,Seat,historical
+137,Damage,historical
+138,Debris,historical
+139,Illness,historical
+140,Undertray,historical
+141,Cooling system,historical
+142,Lapped,historical
+143,Did not start,historical

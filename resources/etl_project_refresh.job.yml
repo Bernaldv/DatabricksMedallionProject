@@ -1,0 +1,274 @@
+resources:
+  jobs:
+    etl_project_refresh:
+      name: "ETL Medallion F1 - ${bundle.target}"
+
+      environments:
+        - environment_key: serverless_env
+          spec:
+            client: "1"
+
+      tasks:
+        # ===================== 0. PREPARACIÓN DE AMBIENTE =====================
+        - task_key: prepamb
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../PrepAmb/0_preparacion_ambientes.py
+            base_parameters:
+              env: ${bundle.target}
+              storage_name: ${var.storage_name}
+              credential_name: ${var.credential_name}
+              catalog_base: catalog_pr_db
+
+        # ===================== 1. INGESTA (bronze) — en paralelo =====================
+        - task_key: ingesta_circuits
+          depends_on: [{task_key: prepamb}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/1_Ingesta_circuits.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema: bronze
+              container: raw              
+              storageName: ${var.storage_name}
+        
+        - task_key: ingesta_constructors
+          depends_on: [{task_key: prepamb}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/1_Ingesta_constructors.ipynb
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema: bronze
+              container: raw              
+              storageName: ${var.storage_name}
+
+        - task_key: ingesta_driver_standings
+          depends_on: [{task_key: prepamb}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/1_Ingesta_driver_standings.ipynb
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema: bronze
+              container: raw              
+              storageName: ${var.storage_name}
+
+        - task_key: ingesta_drivers
+          depends_on: [{task_key: prepamb}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/1_Ingesta_drivers.ipynb
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema: bronze
+              container: raw              
+              storageName: ${var.storage_name}
+
+        - task_key: ingesta_races
+          depends_on: [{task_key: prepamb}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/1_Ingesta_races.ipynb
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema: bronze
+              container: raw              
+              storageName: ${var.storage_name}
+
+        - task_key: ingesta_results
+          depends_on: [{task_key: prepamb}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/1_Ingesta_results.ipynb
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema: bronze
+              container: raw              
+              storageName: ${var.storage_name}
+
+        - task_key: ingesta_status
+          depends_on: [{task_key: prepamb}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/1_Ingesta_status.ipynb
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema: bronze
+              container: raw              
+              storageName: ${var.storage_name}
+
+ # ===================== 2. TRANSFORMACIÓN (silver) =====================
+        - task_key: transformacion_dim_circuits
+          depends_on: [{task_key: ingesta_circuits}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/2_Transformacion_dim_circuits.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_bronze: bronze
+              esquema_silver: silver
+
+        - task_key: transformacion_dim_constructors
+          depends_on: [{task_key: ingesta_constructors}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/2_Transformacion_dim_constructors.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_bronze: bronze
+              esquema_silver: silver
+        - task_key: transformacion_dim_drivers
+          depends_on: [{task_key: ingesta_drivers}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/2_Transformacion_dim_drivers.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_bronze: bronze
+              esquema_silver: silver
+
+        - task_key: transformacion_dim_races
+          depends_on: [{task_key: ingesta_races}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/2_Transformacion_dim_races.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_bronze: bronze
+              esquema_silver: silver
+
+        - task_key: transformacion_dim_status
+          depends_on: [{task_key: ingesta_status}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/2_Transformacion_dim_status.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_bronze: bronze
+              esquema_silver: silver
+
+        - task_key: transformacion_fact_driver_standings
+          depends_on:
+            - task_key: ingesta_driver_standings
+            - task_key: transformacion_dim_races
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/2_Transformacion_fact_driver_standings.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_bronze: bronze
+              esquema_silver: silver
+
+        - task_key: transformacion_fact_results
+          depends_on:
+            - task_key: ingesta_results
+            - task_key: transformacion_dim_races
+            - task_key: transformacion_dim_status
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/2_Transformacion_fact_results.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_bronze: bronze
+              esquema_silver: silver
+        # ===================== 3. CARGA (gold) =====================
+        - task_key: carga_constructor_career
+          depends_on:
+            - task_key: transformacion_fact_results
+            - task_key: transformacion_dim_constructors
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/3_1_Carga_constructor_career.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_silver: silver
+              esquema_gold: gold
+
+        - task_key: carga_constructor_standings
+          depends_on:
+            - task_key: transformacion_fact_results
+            - task_key: transformacion_dim_constructors
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/3_2_Carga_constructor_standings.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_silver: silver
+              esquema_gold: gold
+
+        - task_key: carga_constructor_dominance
+          depends_on: [{task_key: carga_constructor_standings}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/3_3_Carga_constructor_dominance.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_gold: gold
+
+        - task_key: carga_driver_career
+          depends_on:
+            - task_key: transformacion_fact_results
+            - task_key: transformacion_dim_drivers
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/3_4_Carga_driver_career.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_silver: silver
+              esquema_gold: gold
+
+        - task_key: carga_season_champions
+          depends_on: [{task_key: transformacion_fact_driver_standings}]
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/3_5_Carga_season_champions.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_silver: silver
+              esquema_gold: gold
+
+        - task_key: carga_drivers_without_title
+          depends_on:
+            - task_key: carga_driver_career
+            - task_key: carga_season_champions
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../proceso/3_6_Carga_drivers_without_title.py
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              esquema_gold: gold
+        # ===================== 4. GRANTS (seguridad) =====================
+        - task_key: grants
+          depends_on:
+            - task_key: carga_constructor_career
+            - task_key: carga_constructor_dominance
+            - task_key: carga_drivers_without_title
+          environment_key: serverless_env
+          notebook_task:
+            notebook_path: ../seguridad/1_Grants.ipynb
+            base_parameters:
+              env: ${bundle.target}
+              catalog_base: catalog_pr_db
+              schema: gold
+              read_group: dbrs_visualization
