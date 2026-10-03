@@ -7,23 +7,23 @@ bundle:
 include:
   - resources/*.yml
 
-# Variable declarations. These variables are assigned in the dev/prod targets below.
-# Solo "catalog" varía por ambiente. Los schemas (bronze/silver/gold) son fijos:
-# no cambian entre dev y prod, así que se definen directo en cada task del job,
-
+# Variables que cambian según el ambiente (se asignan en cada target).
+# Los schemas (bronze/silver/gold) son fijos y se definen en cada task del job.
 variables:
   storage_name:
     description: "Storage account (ADLS Gen2) del ambiente"
   credential_name:
     description: "Storage Credential de Unity Catalog del ambiente"
-
+  warehouse_id:
+    description: "SQL Warehouse que ejecuta las consultas del dashboard"
+    lookup:
+      # Se busca por nombre en el workspace de cada ambiente
+      warehouse: "Serverless Starter Warehouse"
 
 targets:
   dev:
-    # The default target uses 'mode: development' to create a development copy.
-    # - Deployed resources get prefixed with '[dev my_user_name]'
-    # - Any job schedules and triggers are paused by default.
-    # See also https://docs.databricks.com/dev-tools/bundles/deployment-modes.html.
+    # - Los recursos desplegados llevan el prefijo '[dev my_user_name]'
+    # - Los schedules y triggers quedan en pausa
     mode: development
     default: true
     workspace:
@@ -36,7 +36,6 @@ targets:
     mode: production
     workspace:
       host: https://adb-7405606644802966.6.azuredatabricks.net
-      # We explicitly deploy to /Workspace/Users/diana.bernalt@outlook.com to make sure we only have a single copy.
       root_path: /Workspace/Users/diana.bernalt@outlook.com/.bundle/${bundle.name}/${bundle.target}
     variables:
       storage_name: "adlsdvbtprod01"
