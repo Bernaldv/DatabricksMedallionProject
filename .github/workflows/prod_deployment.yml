@@ -1,0 +1,57 @@
+name: Deploy to PROD dtbrsdvbtprod01
+
+on:
+  # Deploy a producción: solo cuando se hace merge/push a main
+  push:
+    branches:
+      - main
+  # Validación (CI): en cada Pull Request hacia main, sin desplegar
+  pull_request:
+    branches:
+      - main
+  # Permite lanzarlo manualmente desde la pestaña Actions
+  workflow_dispatch:
+
+# Evita dos despliegues a prod al mismo tiempo
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+env:
+  DATABRICKS_HOST: ${{ secrets.DATABRICKS_DEST_HOST }}
+  DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_DEST_TOKEN }}
+
+jobs:
+  # ---------- CI: validar el bundle en cada Pull Request ----------
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validar el bundle (target prod)
+        run: databricks bundle validate --target prod
+
+  # ---------- CD: desplegar y ejecutar en prod (solo en main) ----------
+  deploy-prod:
+    needs: validate
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: prod   # opcional: GitHub Environment "prod" con aprobación manual
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Desplegar el bundle (crea/actualiza el Job en Databricks)
+        run: databricks bundle deploy --target prod
+
+      - name: Ejecutar el Job del ETL y esperar a que termine
+        # Debe coincidir con la clave del job en resources/etl_project_refresh.job.yml
+        run: databricks bundle run etl_project_refresh --target prod
